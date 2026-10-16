@@ -26,7 +26,7 @@
                         </div>
 
                         @if ($companySigners->isNotEmpty())
-                            <div class="border border-indigo-100 bg-indigo-50 dark:bg-indigo-500/10/50 rounded-md p-4">
+                            <div class="border border-indigo-100 bg-indigo-50 dark:border-indigo-500/30 dark:bg-indigo-500/10 rounded-md p-4">
                                 <x-input-label :value="__('Tugaskan ke Penandatangan (opsional)')" />
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Jika dipilih, dokumen menjadi dokumen perusahaan yang harus ditandatangani semua penandatangan terpilih. Jika dikosongkan, dokumen menjadi milik pribadi Anda.') }}</p>
                                 <div class="mt-3 space-y-2">
@@ -35,7 +35,7 @@
                                             <input type="checkbox" wire:model="signers" value="{{ $signer->id }}"
                                                 class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                                             {{ $signer->name }}
-                                            <span class="text-xs text-gray-400">({{ $signer->email }})</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">({{ $signer->email }})</span>
                                         </label>
                                     @endforeach
                                 </div>
