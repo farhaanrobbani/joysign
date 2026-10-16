@@ -161,6 +161,7 @@ final class DocumentSignerService
                 'user_id' => $signer->id,
                 'signer_name' => $signer->name,
                 'verification_code' => $verificationCode,
+                'position' => $assignment->position,
                 'page_number' => $position->pageNumber,
                 'coord_x' => $position->x,
                 'coord_y' => $position->y,

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['document_id', 'signer_id', 'assigned_by', 'status'])]
+#[Fillable(['document_id', 'signer_id', 'assigned_by', 'status', 'position'])]
 class DocumentAssignment extends Model
 {
     /** @use HasFactory<DocumentAssignmentFactory> */

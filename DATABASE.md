@@ -58,6 +58,7 @@
 | `document_id` | `CHAR(26)` | FK -> `documents.id` | Dokumen Terkait |
 | `user_id` | `CHAR(26)` | FK -> `users.id` | Penandatangan |
 | `verification_code` | `VARCHAR(64)` | UNIQUE, NOT NULL | Kode Unik QR Code |
+| `position` | `SMALLINT UNSIGNED` | NOT NULL, DEFAULT 0 | Posisi penugasan operator (0 = pertama) |
 | `page_number` | `INT` | NOT NULL | Halaman TTE |
 | `coord_x` | `FLOAT` | NOT NULL | Koordinat X (Point) |
 | `coord_y` | `FLOAT` | NOT NULL | Koordinat Y (Point) |
@@ -77,3 +78,15 @@
 | `user_agent` | `TEXT` | NULLABLE | Browser/Device Info |
 | `payload` | `JSON` | NULLABLE | Meta Data Tambahan |
 | `created_at` | `TIMESTAMP` | NOT NULL | |
+
+### 6. Table: `document_assignments`
+| Column | Type | Attributes | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `CHAR(26)` | PK, ULID | Identifier Unik |
+| `document_id` | `CHAR(26)` | FK -> `documents.id` | Dokumen Terkait |
+| `signer_id` | `CHAR(26)` | FK -> `users.id` | Penandatangan |
+| `assigned_by` | `CHAR(26)` | NULLABLE, FK -> `users.id` | Operator Penugasan |
+| `status` | `VARCHAR(20)` | NOT NULL, DEFAULT `pending` | `pending` / `signed` |
+| `position` | `SMALLINT UNSIGNED` | NOT NULL, DEFAULT 0 | Urutan pilihan operator saat menugaskan |
+| `signed_at` | `TIMESTAMP` | NULLABLE | Waktu Penandatanganan Selesai |
+| `created_at` | `TIMESTAMP` | NULLABLE | Waktu Penugasan |

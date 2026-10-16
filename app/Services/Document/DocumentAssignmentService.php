@@ -36,18 +36,21 @@ final class DocumentAssignmentService
             ->where('company_id', $operator->company_id)
             ->where('role', 'signer')
             ->whereIn('id', $signerIds)
-            ->get();
+            ->get()
+            ->sortBy(fn (User $signer): int => (int) array_search($signer->id, $signerIds, true))
+            ->values();
 
         if ($signers->count() !== count($signerIds)) {
             throw SigningException::notAssignedToSign();
         }
 
         DB::transaction(function () use ($document, $operator, $signers): void {
-            foreach ($signers as $signer) {
+            foreach ($signers as $index => $signer) {
                 $document->assignments()->create([
                     'signer_id' => $signer->id,
                     'assigned_by' => $operator->id,
                     'status' => AssignmentStatus::Pending,
+                    'position' => $index,
                 ]);
             }
 

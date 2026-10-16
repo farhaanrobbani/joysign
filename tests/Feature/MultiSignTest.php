@@ -116,6 +116,50 @@ class MultiSignTest extends TestCase
         }
     }
 
+    public function test_assign_signers_preserves_operator_selection_order(): void
+    {
+        $document = $this->makeCompanyDocument();
+
+        app(DocumentAssignmentService::class)->assignSigners(
+            $document,
+            $this->operator,
+            [$this->signerB->id, $this->signerA->id],
+        );
+
+        $assignments = $document->assignments()->orderBy('position')->get();
+
+        $this->assertSame($this->signerB->id, $assignments[0]->signer_id);
+        $this->assertSame(0, $assignments[0]->position);
+        $this->assertSame($this->signerA->id, $assignments[1]->signer_id);
+        $this->assertSame(1, $assignments[1]->position);
+    }
+
+    public function test_portal_orders_signatories_by_assignment_position_not_signing_order(): void
+    {
+        $document = $this->makeCompanyDocument();
+
+        app(DocumentAssignmentService::class)->assignSigners(
+            $document,
+            $this->operator,
+            [$this->signerB->id, $this->signerA->id],
+        );
+
+        $this->actingAs($this->signerA)->post(route('documents.sign', $document), $this->signPayload())
+            ->assertRedirect(route('documents.show', $document));
+        $this->actingAs($this->signerB)->post(route('documents.sign', $document), $this->signPayload())
+            ->assertRedirect(route('documents.show', $document));
+
+        $signatures = $document->refresh()->signatures()->orderBy('signed_at')->get();
+        $this->assertSame($this->signerA->id, $signatures[0]->user_id);
+
+        $response = $this->get(route('verify.show', ['code' => $signatures[0]->verification_code]));
+
+        $response->assertOk();
+        $response->assertSee('Penandatangan 1');
+        $response->assertSee('Penandatangan 2');
+        $response->assertSeeInOrder([$this->signerB->name, $this->signerA->name]);
+    }
+
     public function test_unassigned_signer_cannot_sign_company_document(): void
     {
         $document = $this->makeCompanyDocument();

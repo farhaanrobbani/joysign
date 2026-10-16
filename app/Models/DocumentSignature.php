@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'user_id',
     'signer_name',
     'verification_code',
+    'position',
     'page_number',
     'coord_x',
     'coord_y',

@@ -37,14 +37,15 @@
 
                 @if ($result->document)
                     @php
-                        $signatures = $result->document->signatures()->with('signer')->orderBy('signed_at')->orderBy('id')->get();
+                        $signatures = $result->document->signatures()->with('signer')->orderBy('position')->orderBy('id')->get();
+                        $footerSignature = $result->document->signatures()->orderBy('signed_at')->orderBy('id')->first();
                         $viewCode = $code ?? $result->signature?->verification_code;
                     @endphp
                     <div class="text-sm space-y-3">
-                        @if ($signatures->first()?->verification_code)
+                        @if ($footerSignature?->verification_code)
                             <div class="flex justify-between gap-4">
                                 <span class="text-gray-500 dark:text-gray-400 shrink-0">{{ __('Token') }}</span>
-                                <span class="font-mono break-all text-right text-xs text-gray-900 dark:text-gray-100">{{ \App\Services\Verification\VerificationCode::display($signatures->first()->verification_code) }}</span>
+                                <span class="font-mono break-all text-right text-xs text-gray-900 dark:text-gray-100">{{ \App\Services\Verification\VerificationCode::display($footerSignature->verification_code) }}</span>
                             </div>
                         @endif
                         <div class="flex justify-between gap-4">
