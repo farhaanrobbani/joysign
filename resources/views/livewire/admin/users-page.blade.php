@@ -156,16 +156,16 @@
                                             <div class="flex items-center gap-2 text-xs">
                                                 @if ($user->id !== auth()->id())
                                                     @if ($user->isDisabled())
-                                                        <button type="button" wire:click="enable({{ $user->id }})"
+                                                        <button type="button" wire:click="enable('{{ $user->id }}')"
                                                             class="text-green-600 dark:text-green-400 hover:underline">{{ __('Aktifkan') }}</button>
                                                     @else
-                                                        <button type="button" wire:click="disable({{ $user->id }})"
+                                                        <button type="button" wire:click="disable('{{ $user->id }}')"
                                                             wire:confirm="{{ __('Nonaktifkan pengguna ini?') }}"
                                                             class="text-yellow-600 dark:text-yellow-400 hover:underline">{{ __('Nonaktifkan') }}</button>
                                                     @endif
 
                                                     @php $hasData = ($user->documents_count + $user->signatures_count + $user->certificates_count) > 0; @endphp
-                                                    <button type="button" wire:click="destroy({{ $user->id }})"
+                                                    <button type="button" wire:click="destroy('{{ $user->id }}')"
                                                         wire:confirm="{{ $hasData ? __('Anonimkan pengguna ini? Identitas dihapus, dokumen & verifikasi tetap utuh.') : __('Hapus pengguna ini permanen?') }}"
                                                         class="text-red-600 dark:text-red-400 hover:underline">{{ __('Hapus') }}</button>
                                                 @else

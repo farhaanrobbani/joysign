@@ -101,13 +101,13 @@
                                             </td>
                                             <td class="px-4 py-3 text-right">
                                                 @if ($isOperator && $member->id !== auth()->id())
-                                                    <button type="button" wire:click="removeMember({{ $member->id }})"
+                                                    <button type="button" wire:click="removeMember('{{ $member->id }}')"
                                                         wire:confirm="{{ __('Keluarkan anggota ini?') }}"
                                                         class="text-red-600 dark:text-red-400 hover:underline">{{ __('Keluarkan') }}</button>
 
                                                     @if ($member->role->value === 'signer')
                                                         @php $hasData = ($member->documents_count + $member->signatures_count + $member->certificates_count) > 0; @endphp
-                                                        <button type="button" wire:click="destroyMember({{ $member->id }})"
+                                                        <button type="button" wire:click="destroyMember('{{ $member->id }}')"
                                                             wire:confirm="{{ $hasData ? __('Hapus akun anggota ini? Identitas dihapus, dokumen & verifikasi tetap utuh.') : __('Hapus permanen akun anggota ini?') }}"
                                                             class="text-red-600 dark:text-red-400 hover:underline ml-3">{{ __('Hapus') }}</button>
                                                     @endif

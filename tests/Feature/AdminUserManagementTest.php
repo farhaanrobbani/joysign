@@ -219,6 +219,25 @@ class AdminUserManagementTest extends TestCase
         $this->assertNull($this->admin->refresh()->disabled_at);
     }
 
+    public function test_user_action_buttons_render_ulid_arguments_as_quoted_strings(): void
+    {
+        $active = User::factory()->create(['role' => UserRole::Signer]);
+        $disabled = User::factory()->create(['role' => UserRole::Signer, 'disabled_at' => now()]);
+
+        $html = Livewire::actingAs($this->admin)
+            ->test(UsersPage::class)
+            ->html();
+
+        $this->assertStringContainsString("disable('{$active->id}')", $html);
+        $this->assertStringContainsString("destroy('{$active->id}')", $html);
+        $this->assertStringContainsString("enable('{$disabled->id}')", $html);
+
+        $this->assertStringNotContainsString("disable({$active->id})", $html);
+        $this->assertStringNotContainsString("destroy({$active->id})", $html);
+        $this->assertStringNotContainsString("disable('{$this->admin->id}')", $html);
+        $this->assertStringNotContainsString("destroy('{$this->admin->id}')", $html);
+    }
+
     public function test_admin_can_delete_user_without_documents(): void
     {
         $user = User::factory()->create();

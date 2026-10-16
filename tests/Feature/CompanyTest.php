@@ -100,6 +100,25 @@ class CompanyTest extends TestCase
         $response->assertSee('Operator');
     }
 
+    public function test_member_action_buttons_render_ulid_arguments_as_quoted_strings(): void
+    {
+        $company = $this->makeOperator();
+        $member = User::factory()->create([
+            'role' => UserRole::Signer,
+            'company_id' => $company->id,
+        ]);
+
+        $html = Livewire::actingAs($this->user)
+            ->test(DashboardPage::class)
+            ->html();
+
+        $this->assertStringContainsString("removeMember('{$member->id}')", $html);
+        $this->assertStringContainsString("destroyMember('{$member->id}')", $html);
+        $this->assertStringNotContainsString("removeMember({$member->id})", $html);
+        $this->assertStringNotContainsString("destroyMember({$member->id})", $html);
+        $this->assertStringNotContainsString("removeMember('{$this->user->id}')", $html);
+    }
+
     public function test_signer_member_does_not_see_add_form(): void
     {
         $company = Company::factory()->create();
