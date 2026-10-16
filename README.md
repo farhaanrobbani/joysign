@@ -97,15 +97,32 @@ Default `MAIL_MAILER=log` (email ditulis ke log, tidak terkirim).
 ## Pengujian
 
 ```bash
-php artisan test          # 216 test
+php artisan test          # 220 test
 vendor/bin/pint           # code style (Laravel Pint)
 ```
+
+## Deploy Produksi
+
+Ringkas — langkah lengkap ada di [`DEPLOY.md`](DEPLOY.md):
+
+```bash
+git pull --ff-only origin main
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+php artisan migrate --force
+php artisan optimize:clear && php artisan optimize
+sudo systemctl restart php-fpm-85   # reset opcache — WAJIB
+```
+
+- **Trusted proxies**: aplikasi memakai `trustProxies(at: '*')` (di `bootstrap/app.php`) agar IP klien asli & skema HTTPS dari Cloudflare Tunnel/reverse proxy terdeteksi benar.
+- **Queue**: `QUEUE_CONNECTION=database` **tanpa worker** adalah jebakan sunyi — set `sync` atau jalankan `php artisan queue:work` (lihat `DEPLOY.md` §6).
 
 ## Dokumentasi Proyek
 
 | Dokumen | Isi |
 | :--- | :--- |
 | [`PRD.md`](PRD.md) | Persyaratan produk & functional requirements |
+| [`DEPLOY.md`](DEPLOY.md) | Runbook deploy produksi (nginx/PHP-FPM, cache, rollback) |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Arsitektur aplikasi & pola service |
 | [`DATABASE.md`](DATABASE.md) | Skema tabel & relasi |
 | [`DESIGN.md`](DESIGN.md) | Desain UI, token, footer PDF |

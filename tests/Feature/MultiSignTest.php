@@ -283,7 +283,7 @@ class MultiSignTest extends TestCase
         $this->actingAs($this->signerB)->post(route('documents.sign', $document), $this->signPayload());
 
         $document->refresh();
-        $signatures = $document->signatures()->orderBy('signed_at')->get();
+        $signatures = $document->signatures()->orderBy('signed_at')->orderBy('id')->get();
         $this->assertCount(2, $signatures);
 
         $text = $this->extractPdfText(Storage::disk('documents')->path((string) $document->signed_path));
