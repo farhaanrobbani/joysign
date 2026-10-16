@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Livewire\Documents\DocumentsList;
 use App\Livewire\Documents\IndexPage;
 use App\Models\AuditLog;
 use App\Models\Document;
@@ -32,6 +33,15 @@ class DocumentUploadTest extends TestCase
     {
         // Halaman daftar + unggah di balik middleware auth.
         $this->get(route('documents.index'))->assertRedirect(route('login'));
+    }
+
+    public function test_index_page_embeds_polling_documents_list(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(IndexPage::class)
+            ->assertSeeLivewire(DocumentsList::class);
     }
 
     public function test_user_can_upload_pdf_document(): void

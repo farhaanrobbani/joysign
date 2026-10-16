@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Documents;
 
-use App\Models\Document;
 use App\Rules\IsPdfFile;
 use App\Services\Document\DocumentAssignmentService;
 use App\Services\Document\DocumentUploadService;
@@ -13,16 +12,16 @@ use Illuminate\Validation\Rules\File;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Livewire\WithPagination;
 
 /**
- * Daftar dokumen + form unggah (full-page Livewire). Unghan PDF menjadi aksi
- * store(); halaman detail (show) beserta alur tanda tangan tetap Blade/controller.
+ * Halaman dokumen: form unggah PDF (full-page Livewire). Daftar dokumen
+ * dirender oleh komponen DocumentsList yang melakukan polling. Halaman
+ * detail (show) beserta alur tanda tangan tetap Blade/controller.
  */
 #[Layout('layouts.app')]
 class IndexPage extends Component
 {
-    use WithFileUploads, WithPagination;
+    use WithFileUploads;
 
     public string $title = '';
 
@@ -73,19 +72,6 @@ class IndexPage extends Component
     {
         $user = auth()->user();
 
-        $documents = Document::query()
-            ->where(function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-
-                if ($user->company_id !== null) {
-                    $query->orWhere('company_id', $user->company_id);
-                }
-
-                $query->orWhereHas('assignments', fn ($q) => $q->where('signer_id', $user->id));
-            })
-            ->latest()
-            ->paginate(10);
-
         $companySigners = $user->isCompanyOperator()
             ? $user->company->signers()->orderBy('name')->get()
             : collect();
@@ -98,7 +84,7 @@ class IndexPage extends Component
             .'</div>'
         );
 
-        return view('livewire.documents.index-page', compact('documents', 'companySigners'))
+        return view('livewire.documents.index-page', compact('companySigners'))
             ->layout('layouts.app', ['header' => $header]);
     }
 }
