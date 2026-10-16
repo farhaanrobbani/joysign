@@ -1,58 +1,117 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><img src="public/images/joysign-logo.png" width="120" alt="Joysign Logo"></p>
+
+<h1 align="center">Joysign — Tanda Tangan Elektronik</h1>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+Aplikasi web TTE (Tanda Tangan Elektronik) kriptografis: penandatanganan PDF multi-penanda, sertifikat digital per pengguna, dan portal verifikasi publik berbasis token/QR Code.
 </p>
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Penandatanganan PDF kriptografis** — tanda tangan digital RSA-2048 di atas hash SHA-256 dokumen, deteksi manipulasi (TAMPERED), co-sign paralel multi-penandatangan dalam satu dokumen.
+- **Posisi penugasan** — urutan "Penandatangan 1, 2, ..." mengikuti pilihan operator saat menugaskan; penandatanganan sendiri bebas giliran.
+- **Sertifikat digital per pengguna** — pasangan kunci OpenSSL dienkripsi *at-rest* dengan AES-256-GCM + Argon2id; passphrase tidak pernah disimpan plain text.
+- **QR + Token verifikasi** — setiap tanda tangan menghasilkan QR Code dan token 12 karakter Base32; footer tiap halaman PDF memuat `Token:` milik penanda pertama.
+- **Portal verifikasi publik** (`/verify`) — tanpa login: ketik/scan token → status **VALID / TAMPERED / EXPIRED / REVOKED**, daftar penandatangan, dan tautan dokumen; rate-limited 10/menit.
+- **Panel admin & operator** — manajemen pengguna (tanpa registrasi publik — akun hanya dibuat admin/operator), pengaturan situs/logo, dan audit trail lengkap (IP, User-Agent, waktu UTC).
+- **Keamanan form** — Cloudflare Turnstile pada login & lupa-password (opsional, *fail-closed*), rate limit login bawaan.
+- **Dark mode** & branding navy Joysign.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tech Stack
 
-## Learning Laravel
+| Lapisan | Teknologi |
+| :--- | :--- |
+| Backend | Laravel 13 · PHP 8.5 |
+| Frontend | Livewire 4 · Tailwind CSS 3 · Alpine.js · Vite |
+| PDF & QR | TCPDF + FPDI · endroid/qr-code |
+| Database | MySQL/MariaDB (dev/test: SQLite in-memory) |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Persyaratan
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP ≥ 8.3 (dikembangkan dengan 8.5) + ekstensi `openssl`, `gd`/`imagick`, `pdo_mysql`
+- Composer · Node.js + npm
+- MySQL/MariaDB
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Quick Start
 
 ```bash
-composer require laravel/boost --dev
+git clone https://github.com/farhaanrobbani/joysign.git
+cd joysign
+composer install
+npm install && npm run build
 
-php artisan boost:install
+cp .env.example .env
+# sesuaikan DB_*, lalu:
+php artisan key:generate
+php artisan migrate --seed
+
+php artisan serve --port=7051
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Buka `http://localhost:7051`.
 
-## Contributing
+### Akun demo (dibuat seeder)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Email | Role | Password |
+| :--- | :--- | :--- |
+| `admin@tte.test` | Admin | `password` |
+| `signer@tte.test` | Penandatangan (sertifikat aktif) | `password` |
 
-## Code of Conduct
+Passphrase sertifikat demo: **`password123`**.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+> ⚠️ **Sebelum produksi**: ganti semua akun & passphrase demo (tercantum di `DatabaseSeeder`), nonaktifkan/membersihkan seeder, dan isi konfigurasi keamanan di bawah.
 
-## Security Vulnerabilities
+## Konfigurasi Opsional
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Cloudflare Turnstile (anti-bot di login & lupa-password)
+
+Buat site gratis di [Cloudflare Dashboard → Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile), lalu isi di `.env`:
+
+```dotenv
+TURNSTILE_ENABLED=true
+TURNSTILE_SITEKEY=...
+TURNSTILE_SECRET=...
+```
+
+Saat `enabled=true`, form wajib token; secret salah atau siteverify gagal → form diblokir (*fail-closed*). Default `false` untuk pengembangan.
+
+### SMTP Gmail (lupa-password & verifikasi email)
+
+Di Google Account → Security → 2-Step Verification → **App passwords**, lalu:
+
+```dotenv
+MAIL_MAILER=smtp
+MAIL_SCHEME=ssl
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=account@gmail.com
+MAIL_PASSWORD=app-password-16-digit
+MAIL_FROM_ADDRESS=account@gmail.com
+MAIL_FROM_NAME=Joysign
+```
+
+Default `MAIL_MAILER=log` (email ditulis ke log, tidak terkirim).
+
+## Pengujian
+
+```bash
+php artisan test          # 216 test
+vendor/bin/pint           # code style (Laravel Pint)
+```
+
+## Dokumentasi Proyek
+
+| Dokumen | Isi |
+| :--- | :--- |
+| [`PRD.md`](PRD.md) | Persyaratan produk & functional requirements |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Arsitektur aplikasi & pola service |
+| [`DATABASE.md`](DATABASE.md) | Skema tabel & relasi |
+| [`DESIGN.md`](DESIGN.md) | Desain UI, token, footer PDF |
+| [`BUSINESS-RULES.md`](BUSINESS-RULES.md) | Aturan bisnis (registrasi, signing, verifikasi, audit) |
+| [`AGENTS.md`](AGENTS.md) | Standar coding & alur kerja AI agent |
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Proprietary — kecuali disebut lain, seluruh isi repositori ini bagian dari proyek Joysign.
