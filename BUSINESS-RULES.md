@@ -15,7 +15,7 @@ Koordinat Penempatan: Tanda tangan visual (QR Code) wajib memiliki koordinat pos
 Integritas Hash: Sebelum proses penandatanganan dimulai, sistem wajib menghitung nilai Hash SHA-256 dari dokumen asli. Hash ini akan diikat bersama tanda tangan digital untuk mencegah manipulasi isi (tampering).
 Non-Repudiation (Penyangkalan): Tanda tangan digital yang telah diproses menggunakan Private Key sah milik pengguna memiliki kekuatan hukum bahwa dokumen tersebut benar disetujui oleh pemilik akun yang bersangkutan, dan tidak dapat disangkal kecuali terbukti ada kebocoran kunci.
 4. Ketentuan Verifikasi Publik
-Akses Terbuka: Portal verifikasi dokumen dapat diakses oleh publik tanpa harus login ke dalam sistem (melalui URL unik hasil scan QR Code atau halaman upload verifikasi mandiri).
+Akses Terbuka: Portal verifikasi dokumen dapat diakses oleh publik tanpa harus login ke dalam sistem (melalui URL unik hasil scan QR Code atau memasukkan token verifikasi 12 karakter di halaman verifikasi).
 Indikator Keaslian: Sistem verifikasi publik hanya memberikan 3 status validasi akhir:
 VALID: Dokumen asli, tanda tangan terverifikasi dengan Public Key, dan Hash file cocok sempurna tanpa perubahan.
 INVALID / TAMPERED: Dokumen terindikasi telah diubah atau dimodifikasi isinya setelah proses penandatanganan selesai.
