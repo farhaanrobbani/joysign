@@ -17,7 +17,8 @@
                         </button>
                     </div>
 
-                    <form wire:submit="store" x-show="$wire.creating" x-cloak class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
+                    @if ($creating)
+                        <form wire:submit="store" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
                         <div>
                             <x-input-label for="admin-name" :value="__('Nama')" />
                             <x-text-input id="admin-name" type="text" class="mt-1 block w-full" wire:model="name" required />
@@ -70,22 +71,25 @@
                             <x-input-error :messages="$errors->get('role')" class="mt-2" />
                         </div>
 
-                        <div x-show="$wire.role !== 'admin'" x-cloak>
-                            <x-input-label for="admin-company" :value="__('Perusahaan')" />
-                            <select id="admin-company" wire:model="companyId" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
-                                <option value="">{{ __('— Perorangan (tanpa perusahaan) —') }}</option>
-                                @foreach ($companies as $company)
-                                    <option value="{{ $company->id }}">{{ $company->name }}</option>
-                                @endforeach
-                            </select>
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Wajib untuk Operator; opsional untuk Signer; diabaikan untuk Admin.') }}</p>
-                            <x-input-error :messages="$errors->get('companyId')" class="mt-2" />
-                        </div>
+                        @if ($role !== 'admin')
+                            <div>
+                                <x-input-label for="admin-company" :value="__('Perusahaan')" />
+                                <select id="admin-company" wire:model="companyId" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                    <option value="">{{ __('— Perorangan (tanpa perusahaan) —') }}</option>
+                                    @foreach ($companies as $company)
+                                        <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Wajib untuk Operator; opsional untuk Signer; diabaikan untuk Admin.') }}</p>
+                                <x-input-error :messages="$errors->get('companyId')" class="mt-2" />
+                            </div>
+                        @endif
 
                         <div class="flex items-end">
                             <x-primary-button>{{ __('Simpan Pengguna') }}</x-primary-button>
                         </div>
-                    </form>
+                        </form>
+                    @endif
                 </div>
             </div>
 

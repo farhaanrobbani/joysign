@@ -69,6 +69,35 @@ class AdminUserManagementTest extends TestCase
         $this->actingAs($signer)->get(route('admin.users'))->assertForbidden();
     }
 
+    public function test_create_form_toggles_open_and_closed(): void
+    {
+        Livewire::actingAs($this->admin)
+            ->test(UsersPage::class)
+            ->assertSet('creating', false)
+            ->assertDontSee('Simpan Pengguna')
+            ->call('toggleCreating')
+            ->assertSet('creating', true)
+            ->assertSee('Simpan Pengguna')
+            ->call('toggleCreating')
+            ->assertSet('creating', false)
+            ->assertDontSee('Simpan Pengguna');
+    }
+
+    public function test_company_field_visibility_follows_role(): void
+    {
+        Company::factory()->create();
+
+        Livewire::actingAs($this->admin)
+            ->test(UsersPage::class)
+            ->call('toggleCreating')
+            ->set('role', 'signer')
+            ->assertSee('Wajib untuk Operator')
+            ->set('role', 'admin')
+            ->assertDontSee('Wajib untuk Operator')
+            ->set('role', 'operator')
+            ->assertSee('Wajib untuk Operator');
+    }
+
     public function test_admin_can_create_user_with_identity_fields(): void
     {
         Livewire::actingAs($this->admin)

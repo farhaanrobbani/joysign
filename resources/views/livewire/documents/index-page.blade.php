@@ -36,7 +36,7 @@
                                             <input type="checkbox" wire:model="signers" value="{{ $signer->id }}"
                                                 x-on:change="$event.target.checked ? (order.includes($event.target.value) || order.push($event.target.value)) : order = order.filter(id => id !== $event.target.value)"
                                                 class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
-                                            <span x-show="order.includes('{{ $signer->id }}')" x-cloak
+                                            <span x-show="order.includes('{{ $signer->id }}')"
                                                   x-text="order.indexOf('{{ $signer->id }}') + 1"
                                                   class="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-indigo-600 px-1.5 text-[10px] font-semibold text-white"></span>
                                             {{ $signer->name }}
